@@ -8,7 +8,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 
 function App() {
     const mapContainerRef = useRef(null);
-    const apiKey = "AIzaSyBv_ADwQqSzPOGZXcpOefKs3CyPk5WL_uU"; // Google Maps API key
+    const apiKey = "YOUR_API_KEY"; // Google Maps API key
 
     const [weatherData, setWeatherData] = useState({
         stationID: "",
@@ -29,7 +29,7 @@ function App() {
                     lon: reports.address.longitude
                 },
                 headers: {
-                    'X-RapidAPI-Key': '5796a0f86fmshdb9a4f7f16283b2p1652f3jsn0adf4358540f',
+                    'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
                     'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
                 }
             };
@@ -53,7 +53,7 @@ function App() {
                     tz: 'Europe/Berlin'
                 },
                 headers: {
-                    'X-RapidAPI-Key': '5796a0f86fmshdb9a4f7f16283b2p1652f3jsn0adf4358540f',
+                    'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
                     'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
                 }
             };

@@ -15,6 +15,8 @@ To get started, download this repo and run the commands below.
 
 1. `npm install`
 2. `npm run dev`
+3. Update project with your RapidAPI in `App.jsx`
+4. Update project with your Google Maps API in `App.jsx`
 
 This will install all of the needed dependencies and run the app in the dev mode.
 
