@@ -5,6 +5,8 @@ import IncidentPin from "./img/alarm.png"
 import EnginePin from "./img/Engine.png"
 import FireStationPin from "./img/fire-station.png"
 import MarkerClusterer from '@google/markerclustererplus'
+import axios from 'axios'
+import { useState } from 'react'
 
 const apiOptions = {
     apiKey: "AIzaSyBv_ADwQqSzPOGZXcpOefKs3CyPk5WL_uU"
@@ -18,7 +20,55 @@ loader.load().then(() => {
     const markers = addMarkers(map)
 })
 
+const getWeather = async () => {
+    let weatherData
+    let station = ""
+    const stationOptions = {
+        method: 'GET',
+        url: 'https://meteostat.p.rapidapi.com/stations/nearby',
+        params: {
+            lat: reports.address.latitude,
+            lon: reports.address.longitude
+        },
+        headers: {
+            'X-RapidAPI-Key': '5796a0f86fmshdb9a4f7f16283b2p1652f3jsn0adf4358540f',
+            'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
+        }
+    };
 
+    const response = await axios.request(stationOptions);
+    station = response.data.data[0].id
+
+    const startDate = reports.description.event_opened.slice(0, reports.description.event_opened.indexOf("T"))
+    const endDate = reports.description.event_closed.slice(0, reports.description.event_closed.indexOf("T"))
+    const options = {
+        method: 'GET',
+        url: 'https://meteostat.p.rapidapi.com/stations/hourly',
+        params: {
+            station: station,
+            start: startDate,
+            end: endDate,
+            tz: 'Europe/Berlin'
+        },
+        headers: {
+            'X-RapidAPI-Key': '5796a0f86fmshdb9a4f7f16283b2p1652f3jsn0adf4358540f',
+            'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
+        }
+    };
+
+    try {
+        const response = await axios.request(options);
+        for (const data of response.data.data) {
+            if (Date.parse(reports.description.event_opened) < Date.parse(data.time)) {
+                weatherData = data
+                return weatherData
+            }
+        }   
+    } catch (error) {
+        console.error(error);
+    }
+    // console.log(weatherData)
+}
 
 function displayMap() {
     const mapOptions = {
@@ -33,6 +83,7 @@ function displayMap() {
 }
 
 function addMarkers(map) {
+
     const markers = []
     const incidentString =
         '<div id="content">' +
@@ -41,18 +92,13 @@ function addMarkers(map) {
         `<h1 id="firstHeading" class="firstHeading">${reports.description.subtype}</h1>` +
         '<div id="bodyContent">' +
         `<p><b>${reports.address.address_line1}, ${reports.address.city}, ${reports.address.state}</b><br />` +
-        `${reports.description.comments}` +
-        "Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) " +
-        "south west of the nearest large town, Alice Springs; 450&#160;km " +
-        "(280&#160;mi) by road. Kata Tjuta and Uluru are the two major " +
-        "features of the Uluru - Kata Tjuta National Park. Uluru is " +
-        "sacred to the Pitjantjatjara and Yankunytjatjara, the " +
-        "Aboriginal people of the area. It has many springs, waterholes, " +
-        "rock caves and ancient paintings. Uluru is listed as a World " +
-        "Heritage Site.</p>" +
-        '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">' +
-        "https://en.wikipedia.org/w/index.php?title=Uluru</a> " +
-        "(last visited June 22, 2009).</p>" +
+        `${reports.description.comments} <br />` +
+        `Temp: ${1} <br />` + 
+        `Wind Direction: ${1} <br />` + 
+        `Wind Speed: ${1} <br />` +
+        
+        '<p>Attribution: Flat Icon, <a href="https://www.flaticon.com/free-icons/alarm" title="alarm icons">Alarm icons created by Flat Icons - Flaticon</a>' +
+        "(last visited July 01, 2023).</p>" +
         "</div>" +
         "</div>";
     const markerOptions = {
@@ -67,7 +113,7 @@ function addMarkers(map) {
     const incidentMarker = new google.maps.Marker(markerOptions)
     markers.push(incidentMarker)
 
-    
+
 
     incidentMarker.addListener("click", () => {
         incidentInfoWindow.open({
