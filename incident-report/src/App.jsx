@@ -3,10 +3,20 @@ import IncidentPin from "./img/alarm.png"
 import EnginePin from "./img/Engine.png"
 import FireStationPin from "./img/fire-station.png"
 import axios from 'axios'
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
+import Map from 'ol/Map'
+import View from 'ol/View'
+import TileLayer from 'ol/layer/Tile'
+import XYZ from 'ol/source/XYZ'
+import { useGeographic } from "ol/proj"
+import VectorLayer from 'ol/layer/Vector'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import VectorSource from 'ol/source/Vector'
+import { Icon, Style } from 'ol/style'
 
 function App() {
-    const mapContainerRef = useRef(null);
+    const mapContainerRef = useRef(null)
 
     const [weatherData, setWeatherData] = useState({
         stationID: "",
@@ -33,7 +43,7 @@ function App() {
             };
     
             try {
-                const response = await axios.request(options);
+                const response = await axios.request(options)
                 station = response.data.data[0].id
                 console.log("StationID: ", station)
             } catch (error) {
@@ -54,10 +64,10 @@ function App() {
                     'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
                     'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
                 }
-            };
+            }
     
             try {
-                const response = await axios.request(dataOptions);
+                const response = await axios.request(dataOptions)
                 for (const data of response.data.data) {
                     if (Date.parse(reports.description.event_opened) < Date.parse(data.time)) {
                         console.log(data)
@@ -77,11 +87,49 @@ function App() {
         }
 
         getWeatherData()
-    }, []);
+    }, [])
+
+    useEffect(() => {
+        useGeographic()
+
+        const map = new Map({
+            target: mapContainerRef.current,
+            layers: [
+                new TileLayer({
+                    source: new XYZ({
+                        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    })
+                })
+            ],
+            view: new View({
+                center: [reports.address.longitude, reports.address.latitude],
+                zoom: 15
+            })
+        })
+
+        const marker = new Feature({
+            type: 'icon',
+            geometry: new Point([reports.address.longitude, reports.address.latitude])
+        })
+        
+        const vectorLayer = new VectorLayer({
+            source: new VectorSource({
+                features: [marker],
+            }),
+            style: new Style({
+                image: new Icon({
+                    anchor: [0.5, 1],
+                    src: IncidentPin
+                })
+            })
+        })
+        map.addLayer(vectorLayer)
+
+    }, [])
 
     return (
         <div ref={mapContainerRef} style={{ width: '100%', height: '100vh' }}></div>
-    );
+    )
 }
 
-export default App;
+export default App
