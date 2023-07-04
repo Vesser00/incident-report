@@ -14,8 +14,15 @@ import Feature from 'ol/Feature'
 import Point from 'ol/geom/Point'
 import VectorSource from 'ol/source/Vector'
 import { Icon, Style } from 'ol/style'
+import Button from 'react-bootstrap/Button'
+import Offcanvas from 'react-bootstrap/Offcanvas'
 
 function App() {
+    const [show, setShow] = useState(false)
+
+    const handleShow = () => { setShow(true) }
+    const handleClose = () => { setShow(false) }
+
     const mapContainerRef = useRef(null)
 
     const [weatherData, setWeatherData] = useState({
@@ -26,68 +33,68 @@ function App() {
     })
     const [weatherStation, setWeatherStation] = useState("")
 
-    useEffect(() => {
-        const getWeatherData = async () => {
-            let station = ""
-            const options = {
-                method: 'GET',
-                url: 'https://meteostat.p.rapidapi.com/stations/nearby',
-                params: {
-                    lat: reports.address.latitude,
-                    lon: reports.address.longitude
-                },
-                headers: {
-                    'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
-                    'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
-                }
-            };
+    // useEffect(() => {
+    //     const getWeatherData = async () => {
+    //         let station = ""
+    //         const options = {
+    //             method: 'GET',
+    //             url: 'https://meteostat.p.rapidapi.com/stations/nearby',
+    //             params: {
+    //                 lat: reports.address.latitude,
+    //                 lon: reports.address.longitude
+    //             },
+    //             headers: {
+    //                 'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
+    //                 'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
+    //             }
+    //         };
     
-            try {
-                const response = await axios.request(options)
-                station = response.data.data[0].id
-                console.log("StationID: ", station)
-            } catch (error) {
-                console.error(error);
-            }
-            const startDate = reports.description.event_opened.slice(0, reports.description.event_opened.indexOf("T"))
-            const endDate = reports.description.event_closed.slice(0, reports.description.event_closed.indexOf("T"))
-            const dataOptions = {
-                method: 'GET',
-                url: 'https://meteostat.p.rapidapi.com/stations/hourly',
-                params: {
-                    station: station,
-                    start: startDate,
-                    end: endDate,
-                    tz: 'Europe/Berlin'
-                },
-                headers: {
-                    'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
-                    'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
-                }
-            }
+    //         try {
+    //             const response = await axios.request(options)
+    //             station = response.data.data[0].id
+    //             console.log("StationID: ", station)
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //         const startDate = reports.description.event_opened.slice(0, reports.description.event_opened.indexOf("T"))
+    //         const endDate = reports.description.event_closed.slice(0, reports.description.event_closed.indexOf("T"))
+    //         const dataOptions = {
+    //             method: 'GET',
+    //             url: 'https://meteostat.p.rapidapi.com/stations/hourly',
+    //             params: {
+    //                 station: station,
+    //                 start: startDate,
+    //                 end: endDate,
+    //                 tz: 'Europe/Berlin'
+    //             },
+    //             headers: {
+    //                 'X-RapidAPI-Key': 'YOUR_API_KEY', // RapidAPI Key
+    //                 'X-RapidAPI-Host': 'meteostat.p.rapidapi.com'
+    //             }
+    //         }
     
-            try {
-                const response = await axios.request(dataOptions)
-                for (const data of response.data.data) {
-                    if (Date.parse(reports.description.event_opened) < Date.parse(data.time)) {
-                        console.log(data)
-                        const tempWeatherData = {
-                            stationID: station,
-                            temp: data.temp,
-                            windDirection: data.wdir,
-                            windSpeed: data.wspd
-                        }
-                        setWeatherData(tempWeatherData)
-                        break
-                    }
-                }   
-            } catch (error) {
-                console.error(error);
-            }
-        }
+    //         try {
+    //             const response = await axios.request(dataOptions)
+    //             for (const data of response.data.data) {
+    //                 if (Date.parse(reports.description.event_opened) < Date.parse(data.time)) {
+    //                     console.log(data)
+    //                     const tempWeatherData = {
+    //                         stationID: station,
+    //                         temp: data.temp,
+    //                         windDirection: data.wdir,
+    //                         windSpeed: data.wspd
+    //                     }
+    //                     setWeatherData(tempWeatherData)
+    //                     break
+    //                 }
+    //             }   
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     }
 
-        getWeatherData()
-    }, [])
+    //     getWeatherData()
+    // }, [])
 
     useEffect(() => {
         useGeographic()
@@ -128,7 +135,20 @@ function App() {
     }, [])
 
     return (
+        <>
+        <Button variant="primary" onClick={handleShow}>
+            Reports
+        </Button>
+        <Offcanvas show={show} onHide={handleClose}>
+            <Offcanvas.Header closeButton>
+                <Offcanvas.Title>Incident Reports</Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+                Report Listing
+            </Offcanvas.Body>
+        </Offcanvas>
         <div ref={mapContainerRef} style={{ width: '100%', height: '100vh' }}></div>
+        </>
     )
 }
 
