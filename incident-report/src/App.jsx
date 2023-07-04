@@ -26,6 +26,12 @@ function App() {
 
     const mapContainerRef = useRef(null)
 
+    const sortedReports = reports.sort((date1, date2) => {
+        const d1 = new Date(date1)
+        const d2 = new Date(date2)
+        return d1 - d2
+    })
+
     const [weatherData, setWeatherData] = useState({
         stationID: "",
         temp: 0,
@@ -147,8 +153,8 @@ function App() {
             </Offcanvas.Header>
             <Offcanvas.Body>
                 {
-                reports.map(report => {
-                    return <Card key={report.description.incident_number}>
+                sortedReports.map(report => {
+                    return <Card key={report.description.incident_number} onClick={() => {console.log("Card Clicked!")}}>
                         <Card.Body>
                             <Card.Title>{report.description.type}</Card.Title>
                             <Card.Subtitle className="mb-2 text-muted">{report.description.subtype}</Card.Subtitle>
