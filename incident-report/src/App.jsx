@@ -26,10 +26,10 @@ function App() {
 
     const mapContainerRef = useRef(null)
 
-    const sortedReports = reports.sort((date1, date2) => {
-        const d1 = new Date(date1)
-        const d2 = new Date(date2)
-        return d1 - d2
+    const sortedReports = reports.sort((report1, report2) => {
+        const d1 = new Date(report1.description.event_opened)
+        const d2 = new Date(report2.description.event_opened)
+        return d2 - d1
     })
 
     const [weatherData, setWeatherData] = useState({
@@ -117,7 +117,7 @@ function App() {
             ],
             view: new View({
                 // TODO: Fix the hard coding of the initial map center
-                center: [reports[1].address.longitude, reports[1].address.latitude],
+                center: [sortedReports[0].address.longitude, sortedReports[0].address.latitude],
                 zoom: 15
             })
         })
