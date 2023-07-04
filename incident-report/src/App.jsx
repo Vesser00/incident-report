@@ -16,6 +16,7 @@ import VectorSource from 'ol/source/Vector'
 import { Icon, Style } from 'ol/style'
 import Button from 'react-bootstrap/Button'
 import Offcanvas from 'react-bootstrap/Offcanvas'
+import Card from 'react-bootstrap/Card'
 
 function App() {
     const [show, setShow] = useState(false)
@@ -109,28 +110,29 @@ function App() {
                 })
             ],
             view: new View({
-                center: [reports.address.longitude, reports.address.latitude],
+                // TODO: Fix the hard coding of the initial map center
+                center: [reports[1].address.longitude, reports[1].address.latitude],
                 zoom: 15
             })
         })
 
-        const marker = new Feature({
-            type: 'icon',
-            geometry: new Point([reports.address.longitude, reports.address.latitude])
-        })
+        // const marker = new Feature({
+        //     type: 'icon',
+        //     geometry: new Point([reports.address.longitude, reports.address.latitude])
+        // })
         
-        const vectorLayer = new VectorLayer({
-            source: new VectorSource({
-                features: [marker],
-            }),
-            style: new Style({
-                image: new Icon({
-                    anchor: [0.5, 1],
-                    src: IncidentPin
-                })
-            })
-        })
-        map.addLayer(vectorLayer)
+        // const vectorLayer = new VectorLayer({
+        //     source: new VectorSource({
+        //         features: [marker],
+        //     }),
+        //     style: new Style({
+        //         image: new Icon({
+        //             anchor: [0.5, 1],
+        //             src: IncidentPin
+        //         })
+        //     })
+        // })
+        // map.addLayer(vectorLayer)
 
     }, [])
 
@@ -144,7 +146,19 @@ function App() {
                 <Offcanvas.Title>Incident Reports</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-                Report Listing
+                {
+                reports.map(report => {
+                    return <Card key={report.description.incident_number}>
+                        <Card.Body>
+                            <Card.Title>{report.description.type}</Card.Title>
+                            <Card.Subtitle className="mb-2 text-muted">{report.description.subtype}</Card.Subtitle>
+                            <Card.Text>
+                                {report.description.event_opened}
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                })
+                }
             </Offcanvas.Body>
         </Offcanvas>
         <div ref={mapContainerRef} style={{ width: '100%', height: '100vh' }}></div>
