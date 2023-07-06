@@ -7,26 +7,24 @@ This repo contains the completed project for the take home recruiting assignment
 Project Stack
 - JavaScript
 - React
-- Google Map API
-- Metrostat API
+- OpenLayers API
+- Open-Meteo API
 
 ## Getting Started
 To get started, download this repo and run the commands below.
 
 1. `npm install`
 2. `npm run dev`
-3. Update project with your RapidAPI in `App.jsx`
-4. Update project with your Google Maps API in `App.jsx`
 
 This will install all of the needed dependencies and run the app in the dev mode.
 
-If you want to use a different data source, then replace the contents of the `/src/data/reports.json` file.  Currently this app will only work with one report.
+If you want to use a different data source, then replace the contents of the `/src/data/reports.json` file.
 
 ## Improvements
-If I had more time, I would have worked on multiple reports and listing them in a menu.  The user could then click on the report they wanted to see and the map would refresh with that report's data.  I would have also liked to add more details in a better format to each of the map pins.
+Some improvements I would like to make is listing each individual response vehicle with markers, information, and move the map when the info card is clicked.  Another improvement is to have an information window open when a pin is clicked with more information about that item of the report.
 
 ## Time Spent
-I spent around 7-8 hours on this project.  I started to go in one direction, and then found myself at a road block.  After trouble shooting for a while, I decided to go another direction which required some refactoring.  In the end, I was able to get the app to a functional state, but I would have liked to have made it more detailed.
+I spent around 7-8 hours on this project.  I created this project first using Google Maps and RapidAPI, but decided to remove both and replace them with OpenLayers and Open-Meteo for the map and the weather respectivly.  I also changed the general layout and updated it so multiple records are shown.
 
 ## Additional Screenshot
 
